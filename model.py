@@ -1,6 +1,5 @@
 import torch
 from transformers import AutoTokenizer
-# from document_bert_architectures import DocumentBertCombineWordDocumentLinear, DocumentBertSentenceChunkAttentionLSTM
 from plms import mainplm, chunkplm
 from evaluate import evaluation
 from encoder import encode_documents
@@ -8,6 +7,7 @@ from data import asap_essay_lengths, fix_score
 from lossfunctions import multi_loss
 import pandas as pd
 import matplotlib.pyplot as plt
+import math
 
 class AESmodel():
     def __init__(self, traindata, valdata, testdata, foldname, args=None):
@@ -56,7 +56,7 @@ class AESmodel():
         self.plt_test_qwk = []
         self.best_val_qwk = 0.
 
-    def adjust_learning_rate(self, epoch, start_lr, min_lr=5e-7):
+    def adjust_learning_rate(self, epoch, start_lr, min_lr=1e-6):
         """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
         optimizer = self.optim
         lr_0 = max(start_lr[0] * (0.9 ** epoch), min_lr)
@@ -66,9 +66,10 @@ class AESmodel():
         print(f'{lr_0}\t{lr_1}')
 
     def adjust_loss_weight(self, e):
-        self.multi_loss.weight = [self.args['w1'] * (0.5 + e / self.args['train_epoch'] * 0.5),
+        cosvalue = max((math.cos((e / (self.args['train_epoch'] * 0.8)) * math.pi) + 1) / 2, 1e-3)
+        self.multi_loss.weight = [self.args['w1'],
                                   self.args['w2'],
-                                  self.args['w3'] * (0.5 - e / self.args['train_epoch'] * 0.5)]
+                                  self.args['w3'] * cosvalue]
 
     def validate(self, valdata, e=-1, mode='val'):
         self.bert_regression_by_word_document.eval()

@@ -19,7 +19,7 @@ class mainplm(nn.Module):
 
         for param in self.plm.embeddings.parameters():
             param.requires_grad = False
-        for i in range(11):
+        for i in range(6):
             for param in self.plm.encoder.layer[i].parameters():
                 param.requires_grad = False
 

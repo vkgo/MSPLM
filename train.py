@@ -31,7 +31,7 @@ def _initialize_arguments(p: configargparse.ArgParser):
     if torch.cuda.is_available() and args.cuda:
         args.device = 'cuda'
     else:
-        args.dev = 'cpu'
+        args.device = 'cpu'
     return args
 
 
@@ -39,19 +39,20 @@ if __name__ == "__main__":
     # initialize arguments
     p = configargparse.ArgParser(default_config_files=["ini/p1.ini"])
     args = _initialize_arguments(p)
+    print(f'device:{args.device} torch_version:{torch.__version__}')
     # load dataset
     with open(f'./asap/pkl/train/{args.prompt}_dataset.pkl', 'rb') as f:
         dataset = pickle.load(f)
     folds = fivefold(dataset)
-    valessays = []
-    valscores = []
-    testessays = []
-    testscores = []
-    trainessays = []
-    trainscores = []
 
     for val_index in range(len(folds.essay_folds)):
         for test_index in range(len(folds.essay_folds)):
+            valessays = []
+            valscores = []
+            testessays = []
+            testscores = []
+            trainessays = []
+            trainscores = []
             if val_index == test_index:
                 continue
             foldname = f'val{val_index}test{test_index}'

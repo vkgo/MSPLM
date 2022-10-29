@@ -17,8 +17,6 @@ class multi_loss(nn.Module):
         """
         batchsize = y_preds.shape[0]
         mseloss = self.MSE(y_trues, y_preds)
-        # print(y_trues)
-        # print(y_preds)
         simloss = torch.max(torch.tensor(0., device=self.args['device']), self.CosineEmbeddingLoss(y_trues, y_preds, torch.ones(batchsize, dtype=torch.int, device=self.args['device'])))
 
         # count rankloss
