@@ -102,17 +102,17 @@ class AESmodel():
                 batch_doctok_predictions = torch.squeeze(batch_doctok_predictions)
 
                 batch_predictions = batch_doctok_predictions
-                for chunk_index in range(len(self.chunk_sizes)):
-                    batch_document_tensors_chunk = chunk_token_indexes_list[chunk_index][
-                                                   i:i + self.args['batch_size']].to(
-                        device=self.args['device'])
-                    batch_predictions_chunk = self.bert_regression_by_chunk(
-                        batch_document_tensors_chunk,
-                        device=self.args['device'],
-                        plm_batch_size=self.bert_batch_sizes[chunk_index]
-                    )
-                    batch_predictions_chunk = torch.squeeze(batch_predictions_chunk)
-                    batch_predictions = torch.add(batch_predictions, batch_predictions_chunk)  # 多个chunk的分加起来
+                # for chunk_index in range(len(self.chunk_sizes)):
+                #     batch_document_tensors_chunk = chunk_token_indexes_list[chunk_index][
+                #                                    i:i + self.args['batch_size']].to(
+                #         device=self.args['device'])
+                #     batch_predictions_chunk = self.bert_regression_by_chunk(
+                #         batch_document_tensors_chunk,
+                #         device=self.args['device'],
+                #         plm_batch_size=self.bert_batch_sizes[chunk_index]
+                #     )
+                #     batch_predictions_chunk = torch.squeeze(batch_predictions_chunk)
+                #     batch_predictions = torch.add(batch_predictions, batch_predictions_chunk)  # 多个chunk的分加起来
                 if len(batch_predictions.shape) == 0: # 证明只有一个tensor，不构成list
                     batch_predictions = torch.tensor([batch_predictions], device=self.args['device'])
                 loss = self.multi_loss(batch_target_scores.unsqueeze(1), batch_predictions.unsqueeze(1))
@@ -195,16 +195,16 @@ class AESmodel():
 
 
                 batch_predictions = batch_doctok_predictions
-                for chunk_index in range(len(self.chunk_sizes)):
-                    batch_document_tensors_chunk = chunk_token_indexes_list[chunk_index][i:i + self.args['batch_size']].to(
-                        device=self.args['device'])
-                    batch_predictions_chunk = self.bert_regression_by_chunk(
-                        batch_document_tensors_chunk,
-                        device=self.args['device'],
-                        plm_batch_size=self.bert_batch_sizes[chunk_index]
-                    )
-                    batch_predictions_chunk = torch.squeeze(batch_predictions_chunk)
-                    batch_predictions = torch.add(batch_predictions, batch_predictions_chunk) # 多个chunk的分加起来
+                # for chunk_index in range(len(self.chunk_sizes)):
+                #     batch_document_tensors_chunk = chunk_token_indexes_list[chunk_index][i:i + self.args['batch_size']].to(
+                #         device=self.args['device'])
+                #     batch_predictions_chunk = self.bert_regression_by_chunk(
+                #         batch_document_tensors_chunk,
+                #         device=self.args['device'],
+                #         plm_batch_size=self.bert_batch_sizes[chunk_index]
+                #     )
+                #     batch_predictions_chunk = torch.squeeze(batch_predictions_chunk)
+                #     batch_predictions = torch.add(batch_predictions, batch_predictions_chunk) # 多个chunk的分加起来
 
                 if len(batch_predictions.shape) == 0: # 证明只有一个tensor，不构成list
                     batch_predictions = torch.tensor([batch_predictions], device=self.args['device'])
