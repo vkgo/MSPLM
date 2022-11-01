@@ -38,7 +38,7 @@ class mainplm(nn.Module):
             all_plm_output = self.plm(document_batch[doc_id][:self.plm_batch_size, 0],  # [1, 512]
                                       token_type_ids=document_batch[doc_id][:self.plm_batch_size, 1],
                                       attention_mask=document_batch[doc_id][:self.plm_batch_size, 2])
-            plm_output[doc_id][:self.plm_batch_size] = all_plm_output.last_hidden_state[0][0].unsqueeze(0) # last_hidden_state[0][0].unsqueeze(0)
+            plm_output[doc_id][:self.plm_batch_size] = all_plm_output[1] # last_hidden_state[0][0].unsqueeze(0)
         prediction = self.mlp(plm_output.view(plm_output.shape[0], -1))
         assert prediction.shape[0] == document_batch.shape[0]
         return prediction
@@ -83,7 +83,7 @@ class chunkplm(nn.Module):
                          token_type_ids=document_batch[doc_id][
                                         :plm_batch_size, 1],
                          attention_mask=document_batch[doc_id][
-                                        :plm_batch_size, 2]).last_hidden_state[0][0].unsqueeze(0))
+                                        :plm_batch_size, 2])[1])
         output, (_, _) = self.lstm(plm_output.permute(1, 0, 2))
         output = output.permute(1, 0, 2)
         # (batch_size, seq_len, num_hiddens)

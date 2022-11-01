@@ -15,9 +15,10 @@ class multi_loss(nn.Module):
         """
         input must be [batchsize, 1]
         """
+        m, n = y_trues.size()
         batchsize = y_preds.shape[0]
         mseloss = self.MSE(y_trues, y_preds)
-        simloss = torch.max(torch.tensor(0., device=self.args['device']), self.CosineEmbeddingLoss(y_trues, y_preds, torch.ones(batchsize, dtype=torch.int, device=self.args['device'])))
+        simloss = torch.max(torch.tensor(0., device=self.args['device']), self.CosineEmbeddingLoss(y_trues.resize(n, m), y_preds.resize(n, m), torch.ones(batchsize, dtype=torch.int, device=self.args['device'])))
 
         # count rankloss
         rankloss = torch.tensor(0., device=self.args['device'])
@@ -49,7 +50,10 @@ if __name__ == '__main__':
     """
     used to debug
     """
-    x1 = torch.randn(1, 1, device='cuda')
-    x2 = torch.randn(1, 1, device='cuda')
-    loss = multi_loss(args={'device': 'cuda'})
+    # x1 = torch.randn(8, 1, device='cuda')
+    # x2 = torch.randn(8, 1, device='cuda')
+    x1 = torch.tensor([2, 3, 4, 5, 6, 7], device='cuda').resize(6, 1)
+    x2 = torch.tensor([1.1, 3.9, 4.36, 5.35, 6.1, 6.9], device='cuda').resize(6, 1)
+    print(x1, x2)
+    loss = multi_loss(args={'device': 'cuda', 'w1': 40, 'w2':100, 'w3':1})
     print(loss(x1, x2))
